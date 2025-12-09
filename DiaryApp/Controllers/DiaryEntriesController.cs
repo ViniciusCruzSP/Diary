@@ -12,10 +12,14 @@ namespace DiaryApp.Controllers
         {
             _db = db;
         }
-        public IActionResult Index()
+        public IActionResult Diary()
         {
             List<DiaryEntry> entries = _db.DiaryEntries.ToList();
             return View(entries);
+        }
+        public IActionResult Index()
+        {
+            return View();
         }
     }
 }
