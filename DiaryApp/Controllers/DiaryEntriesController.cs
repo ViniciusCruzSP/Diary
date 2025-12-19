@@ -32,7 +32,7 @@ namespace DiaryApp.Controllers
         {
             _db.DiaryEntries.Add(obj);
             _db.SaveChanges();
-            return RedirectToAction("Index");
+            return RedirectToAction("Diary");
         }
     }
 }
