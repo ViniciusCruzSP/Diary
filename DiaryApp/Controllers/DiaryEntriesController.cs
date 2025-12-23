@@ -14,7 +14,9 @@ namespace DiaryApp.Controllers
         }
         public IActionResult Diary()
         {
-            List<DiaryEntry> entries = _db.DiaryEntries.ToList();
+            List<DiaryEntry> entries = _db.DiaryEntries
+                .OrderByDescending(en => en.Created)
+                .ToList();
             return View(entries);
         }
         public IActionResult Index()
@@ -71,5 +73,20 @@ namespace DiaryApp.Controllers
             }
             return View(obj);
         }
+
+        [HttpPost]
+        public IActionResult Delete(int id)
+        {
+            var entry = _db.DiaryEntries.Find(id);
+
+            if (entry == null)
+                return NotFound();
+
+            _db.DiaryEntries.Remove(entry);
+            _db.SaveChanges();
+
+            return RedirectToAction("Diary");
+        }
+
     }
 }
