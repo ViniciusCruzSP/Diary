@@ -1,5 +1,4 @@
-﻿using DiaryApp.Data;
-using DiaryApp.Models;
+﻿using DiaryApp.Models.DTO;
 using DiaryApp.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
@@ -30,61 +29,40 @@ namespace DiaryApp.Controllers
         }
 
         [HttpPost]
-        public IActionResult Create(DiaryEntry obj)
+        public async Task<IActionResult> Create(DiaryEntryDto dto)
         {
-            if(obj != null && obj.Title.Length < 3)
-            {
-                ModelState.AddModelError("Title", "Title too short");
-            }
-            if (ModelState.IsValid)
-            {
-                _db.DiaryEntries.Add(obj);
-                _db.SaveChanges();
-                return RedirectToAction("Diary");
-            }
-            return View(obj);
+            if (!ModelState.IsValid)
+                return View(dto);
+
+            await _service.CreateAsync(dto);
+            return RedirectToAction("Diary");
         }
 
         [HttpGet]
-        public IActionResult Edit(int? id)
+        public async Task<IActionResult> Edit(int id)
         {
-            if(id == null || id == 0)
-            {
+            var entry = await _service.GetByIdAsync(id);
+
+            if(entry == null)
                 return NotFound();
-            }
 
-            DiaryEntry? diaryEntry = _db.DiaryEntries.Find(id);
-
-            return View(diaryEntry);
+            return View(entry);
         }
 
         [HttpPost]
-        public IActionResult Edit(DiaryEntry obj)
+        public async Task<IActionResult> Edit(int id, DiaryEntryDto dto)
         {
-            if (obj != null && obj.Title.Length < 3)
-            {
-                ModelState.AddModelError("Title", "Title too short");
-            }
             if (ModelState.IsValid)
-            {
-                _db.DiaryEntries.Update(obj);
-                _db.SaveChanges();
-                return RedirectToAction("Diary");
-            }
-            return View(obj);
+                return View(dto);
+
+            await _service.UpdateAsync(id, dto);
+            return RedirectToAction("Diary");
         }
 
         [HttpPost]
-        public IActionResult Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
-            var entry = _db.DiaryEntries.Find(id);
-
-            if (entry == null)
-                return NotFound();
-
-            _db.DiaryEntries.Remove(entry);
-            _db.SaveChanges();
-
+            await _service.DeleteAsync(id);
             return RedirectToAction("Diary");
         }
 
