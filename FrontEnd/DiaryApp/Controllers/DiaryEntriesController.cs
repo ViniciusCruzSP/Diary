@@ -1,5 +1,4 @@
-﻿using DiaryApp.Data;
-using DiaryApp.Models.DTO;
+﻿using DiaryApp.Models.DTO;
 using DiaryApp.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
