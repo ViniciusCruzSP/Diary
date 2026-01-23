@@ -1,5 +1,5 @@
 ﻿using DiaryApp.Data;
-using DiaryApp.Models;
+using DiaryApp.Models.DTO;
 using DiaryApp.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
@@ -30,19 +30,14 @@ namespace DiaryApp.Controllers
         }
 
         [HttpPost]
-        public IActionResult Create(DiaryEntry obj)
+        public async Task<IActionResult> Create(DiaryEntryDto dto)
         {
-            if(obj != null && obj.Title.Length < 3)
+            if (!ModelState.IsValid)
             {
-                ModelState.AddModelError("Title", "Title too short");
+                return View(dto);
             }
-            if (ModelState.IsValid)
-            {
-                _db.DiaryEntries.Add(obj);
-                _db.SaveChanges();
-                return RedirectToAction("Diary");
-            }
-            return View(obj);
+            await _service.CreateAsync(dto);
+            return View();
         }
 
         [HttpGet]
