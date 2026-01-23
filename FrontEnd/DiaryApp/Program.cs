@@ -1,12 +1,13 @@
 using DiaryApp.Services;
 
 var builder = WebApplication.CreateBuilder(args);
+var apiBaseUrl = builder.Configuration["ApiSettings:DiaryApiBaseUrl"];
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 builder.Services.AddHttpClient("DiaryApi", client =>
 {
-    client.BaseAddress = new Uri("https://localhost:5001/");
+    client.BaseAddress = new Uri(apiBaseUrl!);
 });
 builder.Services.AddScoped<DiaryApiService>();
 
