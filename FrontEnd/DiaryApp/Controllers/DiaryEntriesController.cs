@@ -52,7 +52,7 @@ namespace DiaryApp.Controllers
         [HttpPost]
         public async Task<IActionResult> Edit(int id, DiaryEntryDto dto)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
                 return View(dto);
 
             await _service.UpdateAsync(id, dto);
