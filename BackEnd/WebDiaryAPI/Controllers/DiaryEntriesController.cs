@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WebDiaryAPI.Data;
 using WebDiaryAPI.Models;
+using WebDiaryAPI.Models.Errors;
 
 namespace WebDiaryAPI.Controllers
 {
@@ -100,20 +101,23 @@ namespace WebDiaryAPI.Controllers
 
         private ActionResult? ValidateDiaryEntry(DiaryEntry entry)
         {
-            if (string.IsNullOrWhiteSpace(entry.Title))
-                return BadRequest("Title is required.");
+            var errors = new Dictionary<string, string[]>();
 
-            if (entry.Title.Length < 3)
-                return BadRequest("Title must have at least 3 characters.");
+            if (string.IsNullOrWhiteSpace(entry.Title))
+                errors["Title"] = ["Title is Required"];
+            else if (entry.Title.Length < 3)
+                errors["Title"] = ["Title must have at least 3 characters"];
 
             if (string.IsNullOrWhiteSpace(entry.Content))
-                return BadRequest("Content is required.");
-
-            if (entry.Content.Length < 10)
-                return BadRequest("Title must have at least 10 characters.");
+                errors["Content"] = ["Content is Required"];
+            else if (entry.Content.Length < 10)
+                errors["Title"] = ["Content must have at least 10 characters"];
 
             if (entry.Created > DateTime.UtcNow)
-                return BadRequest("Date cannot be in the future.");
+                errors["Created"] = ["Date cannot be in the future."];
+
+            if (errors.Any())
+                return BadRequest(new ApiValidationProblemDetails(errors));
 
             return null;
         }
