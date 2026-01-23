@@ -19,6 +19,12 @@ namespace DiaryApp.Services
                 "api/DiaryEntries"
             );
         }
+        public async Task<DiaryEntryDto?> GetByIdAsync(int id)
+        {
+            return await _httpClient.GetFromJsonAsync<DiaryEntryDto>(
+                $"api/DiaryEntries/{id}"
+            );
+        }
 
         public async Task CreateAsync(DiaryEntryDto dto)
         {

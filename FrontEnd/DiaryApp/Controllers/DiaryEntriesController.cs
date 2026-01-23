@@ -33,20 +33,29 @@ namespace DiaryApp.Controllers
         public async Task<IActionResult> Create(DiaryEntryDto dto)
         {
             if (!ModelState.IsValid)
-            {
                 return View(dto);
-            }
+
             await _service.CreateAsync(dto);
             return RedirectToAction("Diary");
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Edit(int id)
+        {
+            var entry = await _service.GetByIdAsync(id);
+
+            if(entry == null)
+                return NotFound();
+
+            return View(entry);
         }
 
         [HttpPost]
         public async Task<IActionResult> Edit(int id, DiaryEntryDto dto)
         {
             if (ModelState.IsValid)
-            {
                 return View(dto);
-            }
+
             await _service.UpdateAsync(id, dto);
             return RedirectToAction("Diary");
         }
