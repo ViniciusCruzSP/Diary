@@ -111,7 +111,7 @@ namespace WebDiaryAPI.Controllers
             if (string.IsNullOrWhiteSpace(entry.Content))
                 errors["Content"] = ["Content is Required"];
             else if (entry.Content.Length < 10)
-                errors["Title"] = ["Content must have at least 10 characters"];
+                errors["Content"] = ["Content must have at least 10 characters"];
 
             if (entry.Created > DateTime.UtcNow)
                 errors["Created"] = ["Date cannot be in the future."];
