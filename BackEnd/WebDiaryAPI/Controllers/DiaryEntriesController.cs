@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WebDiaryAPI.Data;
 using WebDiaryAPI.Models;
+using WebDiaryAPI.Models.Errors;
 
 namespace WebDiaryAPI.Controllers
 {
@@ -37,20 +38,32 @@ namespace WebDiaryAPI.Controllers
         [HttpPost]
         public async Task<ActionResult<DiaryEntry>> PostDiaryEntry(DiaryEntry diaryEntry)
         {
+            var validationResult = ValidateDiaryEntry(diaryEntry);
+            if (validationResult != null)
+                return validationResult;
+
             diaryEntry.Id = 0;
+
             _context.DiaryEntries.Add(diaryEntry);
             await _context.SaveChangesAsync();
-            var resourceUrl = Url.Action(nameof(GetDiaryEntry), new { id = diaryEntry.Id });
-            return Created(resourceUrl, diaryEntry);
+
+            return CreatedAtAction(
+                nameof(GetDiaryEntry),
+                new { id = diaryEntry.Id },
+                diaryEntry
+            );
         }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> PutDiaryEntry(int id, [FromBody] DiaryEntry diaryEntry)
         {
             if (id != diaryEntry.Id)
-            {
                 return BadRequest();
-            }
+
+            var validationResult = ValidateDiaryEntry(diaryEntry);
+            if (validationResult != null)
+                return validationResult;
+
             _context.Entry(diaryEntry).State = EntityState.Modified;
 
             try
@@ -60,13 +73,9 @@ namespace WebDiaryAPI.Controllers
             catch (DbUpdateConcurrencyException)
             {
                 if (!DiaryEntryExists(id))
-                {
                     return NotFound();
-                }
                 else
-                {
                     throw;
-                }
             }
 
             return NoContent();
